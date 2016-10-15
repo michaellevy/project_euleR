@@ -378,6 +378,23 @@ d = data_frame(x = 1:1000, y = 2^x,
                #                           function(x) sum(as.numeric(x))),
                ndig = floor(log10(y))) %>% as.data.frame
 
+
+# 17
+# If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, 
+# how many letters would be used?
+# NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and forty-two) 
+# contains 23 letters and 115 (one hundred and fifteen) contains 20 letters. 
+# The use of "and" when writing out numbers is in compliance with British usage.
+
+ones = c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+teens = c("eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
+tens = c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+ll = function(x) sum(nchar(x))
+
+10 * (ll(ones) + ll("ten") + ll(teens) + 10 * ll(tens) + length(tens) * ll(ones)) +
+  100 * ll(ones) + 900 * ll("hundred") + 891 * ll("and") + 
+  ll("onethousand")
+
 # 18
 # From each point, what's the best way out? Lots of ways to end up on each location at each row, 
 # but only the optimal from that point forward matters
