@@ -372,11 +372,9 @@ grid_paths = function(n) {
 grid_paths(20)
 
 # 16
-####### Incomplete
-d = data_frame(x = 1:1000, y = 2^x, 
-               #                sum = sapply(strsplit(as.character(y), NULL), 
-               #                           function(x) sum(as.numeric(x))),
-               ndig = floor(log10(y))) %>% as.data.frame
+library(gmp)
+num = as.bigz(2^1000)
+sum(sapply(strsplit(as.character(num), NULL), as.numeric)) 
 
 
 # 17
