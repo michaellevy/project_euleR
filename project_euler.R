@@ -372,14 +372,22 @@ grid_paths = function(n) {
 grid_paths(20)
 
 # 16
+####### Incomplete
 d = data_frame(x = 1:1000, y = 2^x, 
                #                sum = sapply(strsplit(as.character(y), NULL), 
                #                           function(x) sum(as.numeric(x))),
                ndig = floor(log10(y))) %>% as.data.frame
 
 # 18
+# From each point, what's the best way out? Lots of ways to end up on each location at each row, 
+# but only the optimal from that point forward matters
 d = readLines("data18.txt") 
-lapply(d, function(x) 
-  as.numeric(strsplit(x, " ")))
-    
-  
+d = lapply(d, function(x) 
+  as.numeric(strsplit(x, " ")[[1]]))
+ud = rev(d)
+tot = vector("list", length(ud))
+tot[[1]] = ud[[1]]
+for (row in 2:length(tot))
+  tot[[row]] = sapply(1:length(ud[[row]]), function(item) ud[[row]][item] + max(tot[[row - 1]][c(item, item + 1)]))
+tot
+
