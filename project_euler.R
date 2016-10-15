@@ -374,8 +374,10 @@ grid_paths(20)
 # 16
 library(gmp)
 num = as.bigz(2^1000)
-sum(sapply(strsplit(as.character(num), NULL), as.numeric)) 
-
+# Going to need this again for 20
+sumDigits = function(aBigz)
+  sum(sapply(strsplit(as.character(aBigz), NULL), as.numeric)) 
+sumDigits(num)
 
 # 17
 # If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, 
@@ -406,3 +408,32 @@ for (row in 2:length(tot))
   tot[[row]] = sapply(1:length(ud[[row]]), function(item) ud[[row]][item] + max(tot[[row - 1]][c(item, item + 1)]))
 tot
 
+# 19
+# 1 Jan 1900 was a Monday.
+# Thirty days has September,
+# April, June and November.
+# All the rest have thirty-one,
+# Saving February alone,
+# Which has twenty-eight, rain or shine.
+# And on leap years, twenty-nine.
+# A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
+# How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+library(tidyverse)
+d = data_frame(
+  day = rep(1L),
+  month = rep(c(rep("jan", 31), rep("feb", 29), rep("mar", 31), rep("april", 30),
+              rep("may", 31), rep("june", 30), rep("july", 31), rep("aug", 31),
+              rep("sept", 30), rep("oct", 31), rep("nov", 30), rep("dec", 31)), 101),
+  year = rep(1900:2000, each = 366),
+  dayOfWeek = rep("A")
+)
+for (i in 2:nrow(d)) 
+  d$day[i] = if(d$month[i - 1] != d$month[i]) 1 else d$day[i - 1] + 1
+d = filter(d, !(month == "feb" & day == 29 & year %% 4 != 0))
+d$dayOfWeek = rep(c("M", "T", "W", "R", "F", "Sa", "Su"), len = nrow(d))
+d = filter(d, year > 1900)
+sum(d$day == 1 & d$dayOfWeek == "Su")
+
+# 20
+library(gmp)
+as.bigz(factorial(as.bigz(100))) %>% sumDigits()
