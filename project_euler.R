@@ -8,77 +8,77 @@ fib = integer(4e6)
 fib[1:2] = 1:2
 i = 3
 while(TRUE) {
-    x = sum(fib[c(i-2, i-1)])
-    cat(x)
-    if(x > 4e6)
-        break
-    fib[i] = x
-    i = i + 1
+  x = sum(fib[c(i-2, i-1)])
+  cat(x)
+  if(x > 4e6)
+    break
+  fib[i] = x
+  i = i + 1
 }
 sum(fib[fib %% 2 == 0])
 
 # 3
 two_factors = function(x) {
-    if(x == 2) 
-        return(x)
-    factors = integer()
-    exit = FALSE
-    i = 2
-    while(TRUE) {
-        if(i %% 1000 == 0)
-            cat('on', i, '\n')
-        if(x %% i == 0) {
-            factors[length(factors) + 1] = i
-            factors[length(factors) + 1] = x / i
-            break
-        }
-        if(exit)
-            return(factors)
-        i = i + 1
-        if(i >= x - 1)
-            break
+  if(x == 2) 
+    return(x)
+  factors = integer()
+  exit = FALSE
+  i = 2
+  while(TRUE) {
+    if(i %% 1000 == 0)
+      cat('on', i, '\n')
+    if(x %% i == 0) {
+      factors[length(factors) + 1] = i
+      factors[length(factors) + 1] = x / i
+      break
     }
-    if(length(factors))
-        return(factors)
-    x
+    if(exit)
+      return(factors)
+    i = i + 1
+    if(i >= x - 1)
+      break
+  }
+  if(length(factors))
+    return(factors)
+  x
 }
 
 prime_factors = function(y) {
-    while(TRUE) {
-        last_y = y
-        y = unlist(lapply(y, two_factors))
-        if(is.logical(all.equal(y, last_y)))
-            break
-    }
-    return(y)
+  while(TRUE) {
+    last_y = y
+    y = unlist(lapply(y, two_factors))
+    if(is.logical(all.equal(y, last_y)))
+      break
+  }
+  return(y)
 }
 
 # 4
 d3_factors = function(n, d3 = 999:100) {
-    for(i in d3)
-        if((n / i) %in% d3) {
-            cat('found it. n =', n, 'i =', i)
-            return(TRUE)
-        }
-    return(FALSE)
+  for(i in d3)
+    if((n / i) %in% d3) {
+      cat('found it. n =', n, 'i =', i)
+      return(TRUE)
+    }
+  return(FALSE)
 }
 
 for(n in 999^2:100^2) {
-    if(n != lapply(strsplit(as.character(n), NULL), function(l) paste(rev(l), collapse = "")))
-        next
-    # Only here if n is palendrome
-    cat('trying', n, '\n')
-    if(d3_factors(n))
-        break
+  if(n != lapply(strsplit(as.character(n), NULL), function(l) paste(rev(l), collapse = "")))
+    next
+  # Only here if n is palendrome
+  cat('trying', n, '\n')
+  if(d3_factors(n))
+    break
 }
 
 # 5
 divisble_1to20 = function(n) {
-    for(i in 20:11) {  # Each of the single digit numbers is tested by a larger multiple
-        if((n %% i) != 0)
-            return(FALSE)
-    }    
-    return(TRUE)
+  for(i in 20:11) {  # Each of the single digit numbers is tested by a larger multiple
+    if((n %% i) != 0)
+      return(FALSE)
+  }    
+  return(TRUE)
 }
 
 test = FALSE
@@ -86,28 +86,28 @@ i = 0
 primes = c(2, 3, 5, 7, 11, 13, 17)
 inc = prod(primes)
 while(!test) {
-    i = i + inc
-    cat(i, '\t')
-    test = divisble_1to20(i)
+  i = i + inc
+  cat(i, '\t')
+  test = divisble_1to20(i)
 }
 i
 
 # 6
 ss = function(n)
-    sum(n)^2 - sum(n^2)
+  sum(n)^2 - sum(n^2)
 ss(1:100)
 
 # 7
 i = 1
 n = 3
 while(TRUE) {
-    if(isprime(n)) {
-        i = i + 1
-        cat('Prime number', i, 'is', n, '\n')
-    }
-    if(i == 10001)
-        break
-    n = n + 2
+  if(isprime(n)) {
+    i = i + 1
+    cat('Prime number', i, 'is', n, '\n')
+  }
+  if(i == 10001)
+    break
+  n = n + 2
 }
 
 # 8
@@ -133,25 +133,25 @@ d = gsub('\\s', '', '73167176531330624919225119674426574742355349194934
 71636269561882670428252483600823257530420752963450')
 max = 0
 for(i in 1:(nchar(d) - 13)) {
-    x = prod(as.integer(unlist(strsplit(substr(d, i, i+12), NULL))))
-    if(x > max)
-        max = x
+  x = prod(as.integer(unlist(strsplit(substr(d, i, i+12), NULL))))
+  if(x > max)
+    max = x
 }
 max
 
 # 9
 sp_path = function() {
-for(a in 1:1e3) 
+  for(a in 1:1e3) 
     for(b in a:1e3)
-        if(a + b + sqrt(a^2 + b^2) == 1000)
-            return(c(a = a, b = b))
+      if(a + b + sqrt(a^2 + b^2) == 1000)
+        return(c(a = a, b = b))
 }
 x = sp_path()
 sqrt(sum(x^2)) * prod(x)
 
 # 10
 sum_of_primes = function(set)
-    sum(as.numeric(set[as.logical(isprime(set))]))
+  sum(as.numeric(set[as.logical(isprime(set))]))
 sum_of_primes(1:2e6)
 
 # 11
@@ -180,61 +180,61 @@ m = matrix(d, nrow = 20, byrow = TRUE)
 max = 0
 
 for(r in 1:nrow(m))
-    for(c in 1:(ncol(m) - 3)) {
-        cat('r =', r, 'c =', c, '\n')
-        x = prod(m[r, c:(c+3)])
-        if(x > max)
-            max = x
-    }
+  for(c in 1:(ncol(m) - 3)) {
+    cat('r =', r, 'c =', c, '\n')
+    x = prod(m[r, c:(c+3)])
+    if(x > max)
+      max = x
+  }
 
 for(r in 1:(nrow(m) - 3))
-    for(c in 1:(ncol(m))) {
-        x = prod(m[r:(r+3), c])
-        if(x > max) {
-            max = x
-            loc = c(r, c)
-            
-        }
+  for(c in 1:(ncol(m))) {
+    x = prod(m[r:(r+3), c])
+    if(x > max) {
+      max = x
+      loc = c(r, c)
+      
     }
+  }
 
 for(r in 1:(nrow(m) - 3))
-    for(c in 1:(ncol(m) - 3)) {
-        cat('r =', r, 'c =', c, '\n')
-        x = prod(diag(m[r:(r+3), c:(c+3)]))
-        if(x > max)
-            max = x
-    }
+  for(c in 1:(ncol(m) - 3)) {
+    cat('r =', r, 'c =', c, '\n')
+    x = prod(diag(m[r:(r+3), c:(c+3)]))
+    if(x > max)
+      max = x
+  }
 
 for(r in 4:nrow(m))
-    for(c in 1:(ncol(m) - 3)) {
-        cat('r =', r, 'c =', c, '\n')
-        x = prod(sapply(0:3, function(i) m[r - i, c + i]))
-        if(x > max)
-            max = x
-    }
+  for(c in 1:(ncol(m) - 3)) {
+    cat('r =', r, 'c =', c, '\n')
+    x = prod(sapply(0:3, function(i) m[r - i, c + i]))
+    if(x > max)
+      max = x
+  }
 max
 
 # 12
 library(gmp)
 num_div = function(x, want_len = TRUE) {
-    # Only works for numbers with at least two divisors besides self and one
-    primes = factorize(x)
-    div = c(1, unique(unlist(
-        lapply(1:length(primes), function(n) 
-            apply(combn(as.integer(primes), n), 2, prod))
-    )))
-    if(want_len)
-        return(length(div))
-    div
+  # Only works for numbers with at least two divisors besides self and one
+  primes = factorize(x)
+  div = c(1, unique(unlist(
+    lapply(1:length(primes), function(n) 
+      apply(combn(as.integer(primes), n), 2, prod))
+  )))
+  if(want_len)
+    return(length(div))
+  div
 }
 
 while(TRUE) {
-    i = i + 1
-    tri = sum(tri + i)
-    ndiv = num_div(tri)
-    cat('tri number', i, 'is', tri, 'and has', ndiv, 'divisors.\n')
-    if(ndiv > 500)
-        break
+  i = i + 1
+  tri = sum(tri + i)
+  ndiv = num_div(tri)
+  cat('tri number', i, 'is', tri, 'and has', ndiv, 'divisors.\n')
+  if(ndiv > 500)
+    break
 }
 
 # 13
@@ -344,14 +344,14 @@ substr(print(sum(as.numeric(d12)), digits = 10), 1, 10)
 
 # 14
 make_chain = function(n) {
-    i = 1
-    while(n != 1) {
-        i = i + 1    
-        if(n %% 2)
-            n = 3 * n + 1 else
-                n = n / 2
-    }
-    i
+  i = 1
+  while(n != 1) {
+    i = i + 1    
+    if(n %% 2)
+      n = 3 * n + 1 else
+        n = n / 2
+  }
+  i
 }
 
 odds = seq(1, 1e6, 2)
@@ -360,14 +360,14 @@ system.time({lengths = sapply(odds, make_chain)})
 # 15
 n=2
 grid_paths = function(n) {
-    n = n + 1  # calculations are on intersections, not segments
-    m = matrix(nrow = n, ncol = n)
-    m[, 1] = 1
-    m[1, ] = 1
-    for(i in 2:n)
-        for(j in 2:n)
-            m[i, j] = m[i - 1, j] + m[i, j - 1]
-    m[n, n]
+  n = n + 1  # calculations are on intersections, not segments
+  m = matrix(nrow = n, ncol = n)
+  m[, 1] = 1
+  m[1, ] = 1
+  for(i in 2:n)
+    for(j in 2:n)
+      m[i, j] = m[i - 1, j] + m[i, j - 1]
+  m[n, n]
 }
 grid_paths(20)
 
@@ -422,8 +422,8 @@ library(tidyverse)
 d = data_frame(
   day = rep(1L),
   month = rep(c(rep("jan", 31), rep("feb", 29), rep("mar", 31), rep("april", 30),
-              rep("may", 31), rep("june", 30), rep("july", 31), rep("aug", 31),
-              rep("sept", 30), rep("oct", 31), rep("nov", 30), rep("dec", 31)), 101),
+                rep("may", 31), rep("june", 30), rep("july", 31), rep("aug", 31),
+                rep("sept", 30), rep("oct", 31), rep("nov", 30), rep("dec", 31)), 101),
   year = rep(1900:2000, each = 366),
   dayOfWeek = rep("A")
 )
@@ -437,3 +437,22 @@ sum(d$day == 1 & d$dayOfWeek == "Su")
 # 20
 library(gmp)
 as.bigz(factorial(as.bigz(100))) %>% sumDigits()
+
+# 21
+d = data_frame(
+  ns = 1:1e4,
+  dn = sapply(ns, function(n) {
+      ints = seq_len(n - 1)
+      sum(ints[!(n %% ints)])
+    })
+)
+d$partners = c(0, map_dbl(d$ns[2:nrow(d)], function(n) d$dn[d$ns[d$dn[n]]]))
+filter(d, ns != dn, ns == partners) %>%
+  summarise(sum(ns))
+
+# 22
+x = scan("p022_names.txt", what = "character", sep = ",", na.strings = "")
+x = sort(x)
+splitNames = stringr::str_split(x, "")
+nameSum = map_int(splitNames, function(name) sum(map_int(name, ~ which(LETTERS == .x))))
+sum(seq_along(splitNames) * nameSum)
