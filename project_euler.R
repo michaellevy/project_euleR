@@ -1,3 +1,7 @@
+library(tidyverse)
+library(gmp)  # as.bigz
+source("euler_functions.R")
+
 # 1
 threes = seq(3, 999, by = 3)
 fives = seq(5, 999, by = 5)
@@ -103,12 +107,12 @@ n = 3
 while(TRUE) {
   if(isprime(n)) {
     i = i + 1
-    cat('Prime number', i, 'is', n, '\n')
   }
   if(i == 10001)
     break
   n = n + 2
 }
+cat('Prime number', i, 'is', n, '\n')
 
 # 8
 d = gsub('\\s', '', '73167176531330624919225119674426574742355349194934
@@ -150,8 +154,9 @@ x = sp_path()
 sqrt(sum(x^2)) * prod(x)
 
 # 10
+# Had a faster implementation of isprime, not sure where it came from. Wasn't mine.
 sum_of_primes = function(set)
-  sum(as.numeric(set[as.logical(isprime(set))]))
+  sum(as.numeric(set[sapply(set, isprime)]))
 sum_of_primes(1:2e6)
 
 # 11
@@ -375,8 +380,6 @@ grid_paths(20)
 library(gmp)
 num = as.bigz(2^1000)
 # Going to need this again for 20
-sumDigits = function(aBigz)
-  sum(sapply(strsplit(as.character(aBigz), NULL), as.numeric)) 
 sumDigits(num)
 
 # 17
@@ -418,7 +421,6 @@ tot
 # And on leap years, twenty-nine.
 # A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
 # How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
-library(tidyverse)
 d = data_frame(
   day = rep(1L),
   month = rep(c(rep("jan", 31), rep("feb", 29), rep("mar", 31), rep("april", 30),
@@ -438,6 +440,7 @@ sum(d$day == 1 & d$dayOfWeek == "Su")
 library(gmp)
 as.bigz(factorial(as.bigz(100))) %>% sumDigits()
 
+
 # 21
 d = data_frame(
   ns = 1:1e4,
@@ -456,3 +459,173 @@ x = sort(x)
 splitNames = stringr::str_split(x, "")
 nameSum = map_int(splitNames, function(name) sum(map_int(name, ~ which(LETTERS == .x))))
 sum(seq_along(splitNames) * nameSum)
+
+# 23
+# it can be shown that all integers greater than 28123 can be written as the sum of two abundant numbers. 
+# However, this upper limit cannot be reduced any further by analysis even though it is known that the 
+# greatest number that cannot be expressed as the sum of two abundant numbers is less than this limit.
+# 
+# Find the sum of all the positive integers which cannot be written as the sum of two abundant numbers.
+
+ints = 1:28123  # integers we need to consider
+facsum = map_int(ints, ~ sum(findFactors(.x)))  # Find the sum of factors of each integer
+abund = ints[facsum > ints]   # Find the abundant numbers
+
+system.time({  # 57"
+  twos = combn(abund, 2, simplify = FALSE)   # Find all the two-combos of abundant numbers except identical pairs
+  allTwos = c(twos, lapply(abund, rep, 2))  # Add identical pairs
+  sum = map_int(allTwos, sum)  # Find the sum of each pair
+})
+
+# OR, matrix style:
+system.time({  # 25"
+  twos = combn(abund, 2, simplify = TRUE)
+  allTwos = cbind(twos, sapply(head(abund), rep, 2))
+  sum = colSums(allTwos)
+})
+
+uSums = unique(sum[sum <= 28123])  # Find the unique sums of abundant numbers
+sum(ints[!ints %in% uSums])  # Sum the integers that aren't sums of two unique numbers
+
+# 24
+install.packages("combinat")
+system.time({perms = combinat::permn(0:9)})  # 40"
+system.time({   # 37
+  nums = map(perms, ~ as.numeric(paste(.x, collapse = "")))
+})
+sort(flatten_dbl(nums))[[1e6]]
+
+# 25
+# 1000 digits is greater than 1e999, so
+n1 = n2 = n = as.bigz(1)
+i = 2
+while( nchar(as.character(n)) < 1000) {
+  i = i + 1
+  n = n1 + n2
+  n1 = n2
+  n2 = n
+  cat(i, "\t", nchar(as.character(n)), "\n")
+}
+
+# 26
+# From wikipedia: for primes, p,
+# The length of the repetend (period of the repeating decimal) of 1/p is equal to the order of 10 modulo p. 
+# If 10 is a primitive root modulo p, the repetend length is equal to p − 1; if not, the repetend length is a factor of p − 1.
+
+ps = which(sapply(1:1e3, isprime))
+ps = ps[-c(1, 3)]
+
+st = Sys.time()
+dig = map_dbl(ps, ~ mulitOrder(10, .x, prec = bitsNeeded(1e3)))
+Sys.time() - st  # 1.2 min
+max(dig) 
+# The above doesn't work. Way to do the multi order in log10?
+
+
+
+
+
+# 54
+library(stringr)
+
+splitHands = function(x) {
+  h = str_split(x, "\\s")[[1]]
+  list(h[1:5], h[6:10])
+}
+
+compareHands = function(hands) {
+
+  handRanks = sapply(hands, classHand)
+
+  if(length(unique(handRanks)) > 1)
+    return(which.max(handRanks)) else
+      return(breakTie(hands))
+  
+}
+
+breakTie = function(twohands) {
+  # twohands is list of two
+  ht = lapply(twohands, function(x) 
+    sort(table(makeNumeric(x)), dec = FALSE))
+  # Walk right to left in freq-table comparing names (cards)
+  for(i in rev(seq_along(ht[[1]]))) {
+    comp = c(names(ht[[1]])[i], names(ht[[2]])[i])
+    # Check for tie
+    if(do.call(identical, as.list(comp)))  
+      next
+    win = which.max(comp)
+    return(win)
+  }
+}
+
+classHand = function(hand) {
+  numHand = makeNumeric(hand)
+  handRank = rankHand(numHand)
+  if(flushCheck(hand)) {
+    if(handRank == 5) handRank = 9
+    if(handRank == 1) handRank = 6
+  }
+  return(handRank)
+}
+
+
+flushCheck = function(hand) {
+  length(unique(sapply(hand, str_sub, 2, 2))) == 1  
+}
+
+makeNumeric = function(hand) {
+  dplyr::left_join(
+    data.frame(char = sapply(hand, str_sub, 1, 1)),
+    data.frame(num = 2:14,
+               char = c(as.character(2:9), "T", "J", "Q", "K", "A")),
+    by = "char"
+  )[["num"]]
+}
+
+rankHand = function(numHand) {
+
+  # 1 - high card
+  # 2 - pair
+  # 3 - 2 pair
+  # 4 - three of a kind
+  # 5 - straight
+  # 6 - flush
+  # 7 - full house
+  # 8 - four of a kind
+  # 9 - straightflush
+  
+  tt = table(numHand)
+  
+  if(length(tt) == 5) {
+    # Check for straight
+    gaps = diff(sort(numHand))
+    if(isTRUE(all.equal(gaps, rep(1, 4))) | 
+       isTRUE(all.equal(gaps, c(1, 1, 1, 9)))) {
+      return(5)
+    } else { return(1) }
+  }
+  
+  if(length(tt) == 4) 
+    return(2)
+  
+  if(length(tt) == 3) {
+    # Check for two pair
+    if(sum(tt == 2) == 2)
+      return(3) else 
+        if(sum(tt == 3) == 1)
+          return(4)
+  }
+  
+  if(any(tt) == 4)
+    return(8)
+  
+  if(all.equal(as.numeric(sort(tt)), c(2, 3)))
+    return(7)
+  
+  stop("You shouldn't be here.")
+}
+  
+hands = readLines("p054_poker.txt")
+hands = lapply(hands, splitHands)
+winners = sapply(hands, compareHands)
+sum(winners == 1)
